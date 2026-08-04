@@ -2,110 +2,580 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
-/>
-<title>Alicia Lee</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ALICIA — Portfolio</title>
+
+<!-- Fonts. Swap these for your exact Figma fonts if you have the files. -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,900;125,800&family=Baloo+2:wght@800&family=Caveat:wght@700&family=Faster+One&family=Gochi+Hand&family=Permanent+Marker&family=Pirata+One&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=New+Rocker&family=Schoolbell&display=swap" rel="stylesheet" />
 
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+
+@font-face { font-family:"Iosevka Charon";   src:url("fonts/iosevka-charon.woff2") format("woff2");   font-weight:400 700; font-display:swap; }
+@font-face { font-family:"Metal Display";     src:url("fonts/metal.woff2") format("woff2");            font-weight:400 900; font-display:swap; }
+@font-face { font-family:"Pecita";            src:url("fonts/pecita.woff2") format("woff2");           font-weight:400;     font-display:swap; }
+@font-face { font-family:"Momo Trust Display";src:url("fonts/momo-trust-display.woff2") format("woff2");font-weight:400 900; font-display:swap; }
+
+  :root {
+    /* animation feel */
+    --speed: 90;            /* default marquee speed (px/sec); each theme can override */
+    --bar-h: 10.4vh;        /* height of a normal bar (sized so all 9 bars fill one screen) */
+    --bar-min: 74px;        /* never smaller than this */
+    --name-h: 16.8vh;       /* the (taller) name bar */
+    --name-min: 120px;
   }
 
-  html,
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { background: #000; }
   body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #fff;
+    font-family: 'Archivo', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 
-  .page {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+  #app { min-height: 100vh; display: flex; flex-direction: column; }
 
-  header {
-    height: 58px;
-    min-height: 58px;
-    background: white;
+  .section { display: flex; flex-direction: column; }
+
+  /* ---------- the bars ---------- */
+  .bar {
+    height: var(--bar-h);
+    min-height: var(--bar-min);
+    background: var(--bg);
+    color: var(--fg);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 24px;
-    z-index: 10;
-  }
-
-  .name,
-  .status {
-    font-weight: 700;
-    color: #000;
-    line-height: 1;
-    letter-spacing: -0.03em;
-  }
-
-  .name {
-    font-size: clamp(1.2rem, 2vw, 2.2rem);
-  }
-
-  .status {
-    font-size: clamp(1rem, 1.8vw, 2rem);
-    text-align: right;
-  }
-
-  .hero {
-    flex: 1;
-    position: relative;
     overflow: hidden;
-  }
-
-  .hero img {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    border: none;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center center;
+    text-align: left;
+    transform-origin: center center;
+    transition: transform .18s cubic-bezier(.2,.7,.2,1), filter .18s ease, box-shadow .18s ease;
+    will-change: transform;
+  }
+  .bar:hover,
+  .bar:focus-visible {
+    transform: scale(1.06);
+    filter: brightness(1.1);
+    box-shadow: 0 16px 46px rgba(0,0,0,.45);
+    z-index: 20;
+  }
+  .bar:focus-visible { outline: 4px solid #fff; outline-offset: -8px; }
+
+  /* ---------- marquee ---------- */
+  .marquee { width: 100%; height: 100%; overflow: hidden; display: flex; align-items: center; }
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+    animation: marquee-ltr var(--dur, 20s) linear infinite;
+  }
+  .marquee-group { display: flex; flex-shrink: 0; }
+  .marquee-item {
     display: block;
+    white-space: nowrap;
+    line-height: 1;
+    padding-right: 0.4em;
+    font-size: var(--size);
+  }
+  /* text moves left -> right, seamlessly */
+  @keyframes marquee-ltr {
+    from { transform: translateX(-50%); }
+    to   { transform: translateX(0); }
   }
 
-  /* Mobile */
-  @media (max-width: 768px) {
-    header {
-      padding: 0 16px;
-      height: 52px;
-      min-height: 52px;
-    }
+  /* ---------- per-project themes ----------
+     --speed is px/sec for that bar's marquee. Higher = faster.
+     All kept in a legible ~58–110 range. */
+  .theme-mushi   { --bg:#22EDFF; --fg:#0436FF; --size: clamp(34px, 9.5vh, 96px); --speed:64;
+                   font-family:'Schoolbell', cursive; font-weight:400; text-transform:lowercase; }
+  .theme-chair   { --bg:#0436FF; --fg:#E9FF6C; --size: clamp(26px, 7.6vh, 72px); --speed:92;
+                   font-family:'Archivo', sans-serif; font-weight:800; font-stretch:125%;
+                   text-transform:uppercase; letter-spacing:.01em; }
+  .theme-pigeon  { --bg:#00FF1E; --fg:#A600FF; --size: clamp(30px, 8.6vh, 86px); --speed:76;
+                   font-family:'Metal Display', 'Playfair Display', Georgia, serif; font-weight:700; font-style:italic;
+                   text-transform:uppercase; }
+  .theme-friends { --bg:#FF04C0; --fg:#46F9FF; --size: clamp(30px, 8.6vh, 84px); --speed:84;
+                   font-family:'Pecita', 'Gochi Hand', cursive; font-weight:400;
+                   text-transform:uppercase; letter-spacing:.02em; }
+  .theme-hydra   { --bg:#DDFF00; --fg:#7700FF; --size: clamp(30px, 8.8vh, 88px); --speed:58;
+                   font-family:'Pirata One', cursive; font-weight:400; text-transform:uppercase; }
+  .theme-frog    { --bg:#FF5900; --fg:#8CFF00; --size: clamp(30px, 8.8vh, 88px); --speed:100;
+                   font-family:'Momo Trust Display', 'Arial Black', 'Helvetica Neue', sans-serif; font-weight:900; text-transform:uppercase; }
+  /* NEW — colours swapped + new fonts. Change to taste (like the others above). */
+  .theme-dare    { --bg:#FF0059; --fg:#00FFC2; --size: clamp(28px, 8.6vh, 86px); --speed:108;
+                   font-family:'Permanent Marker', cursive; font-weight:400;
+                   text-transform:uppercase; letter-spacing:.01em; }
+  .theme-birdie  { --bg:#6A00FF; --fg:#C6FF00; --size: clamp(30px, 8.8vh, 90px); --speed:110;
+                   font-family:'Faster One', cursive; font-weight:400; }
 
-    .name {
-      font-size: 1.1rem;
-    }
+  /* ---------- the static name bar ---------- */
+  .name-bar {
+    height: var(--name-h);
+    min-height: var(--name-min);
+    background: #000;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .name-bar:hover .name-text { opacity: .9; }
+  .name-bar:focus-visible { outline: 4px solid #fff; outline-offset: -8px; }
+  .name-text {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 900;
+    font-stretch: 100%;
+    text-transform: uppercase;
+    white-space: nowrap;
+    line-height: .82;
+    font-size: clamp(64px, 17.5vh, 240px);
+    padding-left: 2vw;
+  }
 
-    .status {
-      font-size: 1rem;
-    }
+  /* ---------- expandable panel ---------- */
+  .panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .42s cubic-bezier(.4,0,.2,1);
+    background: #fff;
+    color: #111;
+  }
+  .panel.open { grid-template-rows: 1fr; }
+  .panel-inner { overflow: hidden; }
+  .panel-content {
+    display: flex;
+    gap: clamp(28px, 3vw, 48px);
+    padding: 48px 5vw 64px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  /* media: every photo/video in a section shares one (large) height and keeps
+     its natural width — no cropping. The media block hugs its content and the
+     copy fills the rest, so panels never look empty. Items wrap if too wide. */
+  .images {
+    flex: 0 1 auto;
+    max-width: 70%;
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-content: flex-start;
+  }
+  .images .photo,
+  .images .video {
+    height: clamp(320px, 44vh, 480px);   /* solid minimum so images read big */
+    width: auto;
+    max-width: 100%;                      /* never overflow its column */
+    flex: 0 0 auto;
+    display: block;
+    border-radius: 2px;
+    background: #f0f0f0;                  /* soft backdrop while loading */
+  }
+  .images .video { aspect-ratio: 16 / 9; overflow: hidden; }
+  .images .video iframe { width: 100%; height: 100%; display: block; border: 0; }
+
+  .copy { flex: 1 1 300px; min-width: 260px; }
+
+  /* chair: photo + video stacked at IDENTICAL widths */
+  .images.images--stack {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    width: clamp(340px, 42vw, 560px);
+    max-width: 70%;
+  }
+  .images.images--stack .photo,
+  .images.images--stack .video {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    flex: 0 0 auto;
+  }
+  .images.images--stack .video { aspect-ratio: 16 / 9; }
+
+  /* mushi: two photos ALWAYS side by side, equal width */
+  .images.images--duo {
+    flex-wrap: nowrap;
+    width: min(70%, 760px);
+    max-width: 70%;
+  }
+  .images.images--duo .photo,
+  .images.images--duo .video {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    height: auto;
+    max-width: none;
+  }
+  .copy h2 {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 900;
+    font-size: clamp(20px, 2.1vw, 30px);
+    text-transform: uppercase;
+    letter-spacing: .01em;
+    margin-bottom: 18px;
+  }
+  .copy p {
+    font-family: system-ui, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.55;
+    margin-bottom: 14px;
+    max-width: 42ch;
+    color: #666;          /* all paragraphs are grey + italic now */
+    font-style: italic;
+  }
+  .copy p:last-child { margin-bottom: 0; }
+  .placeholder { color: #666; font-style: italic; }
+
+  @media (max-width: 900px) {
+    .panel-content { flex-direction: column; gap: 24px; padding: 32px 6vw 44px; }
+    .images { max-width: 100%; width: 100%; flex-direction: column; }
+    .images .photo, .images .video { width: 100%; height: auto; max-width: 100%; }
+    .images .video { aspect-ratio: 16 / 9; }
+    .images.images--duo, .images.images--stack { width: 100%; max-width: 100%; flex-direction: column; flex-wrap: nowrap; }
+    .images.images--duo .photo, .images.images--duo .video,
+    .images.images--stack .photo, .images.images--stack .video { flex: none; width: 100%; height: auto; }
+    .copy { width: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track { animation-play-state: paused; }
   }
 </style>
 </head>
-
 <body>
-  <div class="page"> 
+  <main id="app"></main>
 
-    <header>
-      <div class="name">ALICIA LEE</div>
-      <div class="status">¡UNDER CONSTRUCTION!</div>
-    </header>
+<script>
+  /* =========================================================
+     EDIT YOUR CONTENT HERE
+     - Reorder / rename bars, change colors, drop in your copy.
+     - Replace the gray .imgbox divs with <img> tags when ready.
+     - Marquee speed per bar lives on each .theme-* (--speed, px/sec).
+     ========================================================= */
+  const NAME = "ALICIA";
 
-    <section class="hero">
-      <img
-        src="Alicia_Lee_2.jpg"
-        alt="Alicia Lee"
-      />
-    </section>
+  const bars = [
+    {
+      type: "project", theme: "theme-mushi",
+      text: "mushi mushi 1.0",
+      heading: "MUSHI MUSHI 1.0",
+      paragraphs: [
+        "Do you like birds? Because I do. I used to make so many bird-inspired ceramics that I created a dinnerware brand called mushi mushi. One project included 30 penguin vases, each with their own phenotypes, personalities, and backstories.",
+        "It wasn't all birds, but my mission was to bring the unserious to dinner. Girls just want to have fun!",
+        "Why 1.0? Well, we'll see"
+      ],
+      images: ["Plates.JPG", "Penguins.png"],
+      mediaLayout: "duo"
+    },
+    {
+      type: "project", theme: "theme-chair",
+      text: "chair for workplace morale",
+      heading: "CHAIR FOR WORKPLACE MORALE",
+      paragraphs: [
+        "It’s like if HR and Dante’s Inferno had a baby, and that baby is an inflatable tube man torture device.", 
+        "Imagine one day you get an email from human resources forcing this chair on you. Inspired by the famed office pizza parties, you won’t get a raise but you WILL have fun. The chair is supposed to make you laugh, introducing levity into the work day, thus boosting productivity. It’s a win win for the institution and the little man. After all, if you don’t laugh, you’ll cry.", 
+        "Shown in the <a href=\"https://www.providencejournal.com/picture-gallery/news/local/2026/05/22/highlights-from-2026-risd-grad-show-open-at-the-convention-center/90215438007/\" target=\"_blank\" rel=\"noopener noreferrer\">Providence Journal</a>.",
+        "Read more about it <a href=\"https://digitalcommons.risd.edu/cgi/viewcontent.cgi?article=2596&context=masterstheses\" target=\"_blank\" rel=\"noopener noreferrer\">here</a>."
+      ],
+      images: ["Chair2final.png", "https://www.youtube.com/watch?v=KHAB8seV99w"],
+      mediaLayout: "stack"
+    },
+    {
+      type: "project", theme: "theme-pigeon",
+      text: "pigeon grill",
+      heading: "PIGEON GRILL",
+      paragraphs: [
+        "His name is Steve and like real a pigeon, he can handle a lot. His heat tolerance is through the roof, delivering perfectly charred hot dogs and kebabs at any hour. Just don’t bring him inside; he might make a mess.", 
+    "Showcased at New York Design Week - Souvenirs Collection 2025."
+      ],
+      images: ["pigeongrill.png"]
+    },
+    {
+      type: "project", theme: "theme-dare",
+      text: "DARE",
+      heading: "DARE",
+      paragraphs: [
+        "This is your brain when you roll with your vices."
+      ],
+      images: ["Dare1.jpg"]
+    },
+    {
+      type: "name",
+      heading: "ALICIA",
+      paragraphs: [
+        "Just a girl in the world (NYC) who loves ugly animals, dinner parties, and baltic birch.",
+        "Online: <a href=\"mailto:alicia888lee@gmail.com\">email</a> &middot; <a href=\"https://www.instagram.com/alicial33/\" target=\"_blank\" rel=\"noopener noreferrer\">Instagram</a> &middot; <a href=\"https://www.linkedin.com/in/alicial33/\" target=\"_blank\" rel=\"noopener noreferrer\">LinkedIn</a>.",
+        "Offline: NYC, LA"
+      ],
+      placeholder: true
+    },
+    {
+      type: "project", theme: "theme-friends",
+      text: "dinner with friends",
+      heading: "DINNER WITH FRIENDS",
+      paragraphs: [
+        "I used to welcome strangers into my home for dinner. Every month, I would cook a 3 course meal for 11 people I had never met before with the bright eyed, bushy tailed hope that we would become friends.", 
+        "Did it work? Yes! We celebrated our 2 year anniversary a few months ago and I met people I still yap with on a daily basis. That’s amazing net revenue (friendship) retention if I do say so myself.", 
+        "Featured by the <a href=\"https://www.nytimes.com/2023/03/11/style/optimism-friendship-dinner.html\" target=\"_blank\" rel=\"noopener noreferrer\">New York Times</a>."
+      ],
+      images: ["dinnerwithfriends_copy.png", "Dinner1.jpg"]
+    },
+    {
+      type: "project", theme: "theme-hydra",
+      text: "my little hydra",
+      heading: "MY LITTLE HYDRA",
+      paragraphs: [
+        "My Little Hydra™ is here to bring an abominable flair to your cuddly creature collection. Hug it, snuggle it, and giggle along as each head delivers the same exact blank stare. With much indifference, My Little Hydra™ teaches that friendship comes in all shapes and sizes. For ages 12 months and up."
+      ],
+      images: ["Hydra1.PNG", "goosetable.jpg"]
+    },
+    {
+      type: "project", theme: "theme-frog",
+      text: "frog cart",
+      heading: "FROG CART",
+      paragraphs: [
+        "This cart has motion on many levels. His legs are powered by your gentle guidance while his back is as strong as a Mesopotamian mule. Vases, cases, bottles, and models -- your wish is his command with his 3 different shelf levels.",
+        "Vroom vroom."
+      ],
+      images: ["frog.png"]
+    },
+    {
+      type: "project", theme: "theme-birdie",
+      text: "Pow Pow Birdie",
+      heading: "POW POW BIRDIE",
+      paragraphs: [
+        "coming soon..."
+      ],
+    }
+  ];
 
-  </div>
+  const app = document.getElementById("app");
+
+  /* ---- build the DOM ---- */
+  bars.forEach((bar) => {
+    const section = document.createElement("section");
+    section.className = "section";
+
+    if (bar.type === "name") {
+      section.classList.add("name-section");
+
+      // clickable name bar (static big text, no marquee)
+      const nameBar = document.createElement("div");
+      nameBar.className = "name-bar";
+      nameBar.setAttribute("role", "button");
+      nameBar.setAttribute("tabindex", "0");
+      nameBar.setAttribute("aria-expanded", "false");
+      nameBar.setAttribute("aria-label", NAME + " — about — expand");
+      const span = document.createElement("span");
+      span.className = "name-text";
+      span.textContent = NAME;
+      nameBar.appendChild(span);
+
+      // panel (same layout as the project bars)
+      const panel = document.createElement("div");
+      panel.className = "panel";
+      const inner = document.createElement("div");
+      inner.className = "panel-inner";
+      const content = document.createElement("div");
+      content.className = "panel-content";
+
+      if (bar.images && bar.images.length) {
+        const images = document.createElement("div");
+        images.className = "images";
+        images.innerHTML = bar.images.map(item => mediaHTML(item, bar.heading || "ABOUT")).join("");
+        content.appendChild(images);
+      }
+
+      const copy = document.createElement("div");
+      copy.className = "copy";
+      const h2 = document.createElement("h2");
+      h2.textContent = bar.heading || "ABOUT";
+      copy.appendChild(h2);
+      (bar.paragraphs || []).forEach((t) => {
+        const p = document.createElement("p");
+        if (bar.placeholder) p.className = "placeholder";
+        p.innerHTML = t;
+        copy.appendChild(p);
+      });
+
+      content.appendChild(copy);
+      inner.appendChild(content);
+      panel.appendChild(inner);
+
+      const toggle = () => {
+        const open = panel.classList.toggle("open");
+        nameBar.setAttribute("aria-expanded", open ? "true" : "false");
+        nameBar.setAttribute("aria-label", NAME + " — about" + (open ? " — collapse" : " — expand"));
+        if (open) setTimeout(() => nameBar.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+      };
+      nameBar.addEventListener("click", toggle);
+      nameBar.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+      });
+
+      section.appendChild(nameBar);
+      section.appendChild(panel);
+      app.appendChild(section);
+      return;
+    }
+
+    // clickable bar with marquee
+    const barEl = document.createElement("div");
+    barEl.className = "bar " + bar.theme;
+    barEl.setAttribute("role", "button");
+    barEl.setAttribute("tabindex", "0");
+    barEl.setAttribute("aria-expanded", "false");
+    barEl.setAttribute("aria-label", bar.heading + " — expand");
+
+    const marquee = document.createElement("div");
+    marquee.className = "marquee";
+    marquee.dataset.text = bar.text;
+    barEl.appendChild(marquee);
+
+    // panel
+    const panel = document.createElement("div");
+    panel.className = "panel";
+    const inner = document.createElement("div");
+    inner.className = "panel-inner";
+    const content = document.createElement("div");
+    content.className = "panel-content";
+
+    if (bar.images && bar.images.length) {
+      const images = document.createElement("div");
+      images.className = "images" + (bar.mediaLayout ? " images--" + bar.mediaLayout : "");
+      images.innerHTML = bar.images.map(item => mediaHTML(item, bar.heading)).join("");
+      content.appendChild(images);
+    }
+
+    const copy = document.createElement("div");
+    copy.className = "copy";
+    const h2 = document.createElement("h2");
+    h2.textContent = bar.heading;
+    copy.appendChild(h2);
+    bar.paragraphs.forEach((t) => {
+      const p = document.createElement("p");
+      if (bar.placeholder) p.className = "placeholder";
+      p.innerHTML = t;
+      copy.appendChild(p);
+    });
+
+    content.appendChild(copy);
+    inner.appendChild(content);
+    panel.appendChild(inner);
+
+    // toggle behaviour (each bar opens/closes independently)
+    const toggle = () => {
+      const open = panel.classList.toggle("open");
+      barEl.setAttribute("aria-expanded", open ? "true" : "false");
+      barEl.setAttribute("aria-label", bar.heading + (open ? " — collapse" : " — expand"));
+      if (open) {
+        // let the row grow, then bring it into view
+        setTimeout(() => barEl.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+      }
+    };
+    barEl.addEventListener("click", toggle);
+    barEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+    });
+
+    section.appendChild(barEl);
+    section.appendChild(panel);
+    app.appendChild(section);
+  });
+
+  /* ---- turn a YouTube URL or bare ID into an 11-char video id, else null ---- */
+  function youtubeId(s) {
+    if (typeof s !== "string") return null;
+    const m = s.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([A-Za-z0-9_-]{11})/);
+    if (m) return m[1];
+    if (/^[A-Za-z0-9_-]{11}$/.test(s)) return s;
+    return null;
+  }
+
+  /* ---- one media item -> <img> for a photo, or a 16:9 <iframe> for a YouTube link ---- */
+  function mediaHTML(item, heading) {
+    const id = youtubeId(item);
+    if (id) {
+      return `<div class="video"><iframe src="https://www.youtube.com/embed/${id}" title="${heading}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe></div>`;
+    }
+    return `<img class="photo" src="${item}" alt="${heading}" loading="lazy">`;
+  }
+
+  /* ---- marquee builder: fill the width, then duplicate for a seamless loop ---- */
+  function buildMarquee(marquee) {
+    marquee.innerHTML = "";
+    const text = marquee.dataset.text;
+
+    const track = document.createElement("div");
+    track.className = "marquee-track";
+    const group = document.createElement("div");
+    group.className = "marquee-group";
+    track.appendChild(group);
+    marquee.appendChild(track);
+
+    // repeat the phrase until one group comfortably exceeds the viewport
+    const target = window.innerWidth * 1.2;
+    let guard = 0;
+    do {
+      const item = document.createElement("span");
+      item.className = "marquee-item";
+      item.textContent = text;
+      group.appendChild(item);
+      guard++;
+    } while (group.offsetWidth < target && guard < 80);
+
+    // clone the group -> track is [group][group], translateX(-50%) loops seamlessly
+    const clone = group.cloneNode(true);
+    clone.setAttribute("aria-hidden", "true");
+    track.appendChild(clone);
+
+    // speed is per-bar: read --speed from this bar's theme (falls back to root)
+    const groupWidth = group.offsetWidth;
+    const speed = parseFloat(getComputedStyle(marquee).getPropertyValue("--speed")) || 90;
+    track.style.setProperty("--dur", (groupWidth / speed) + "s");
+  }
+
+  /* ---- keep the static name bar filled with trailing A's on any width ---- */
+  function fillName() {
+    const el = document.querySelector(".name-text");
+    if (!el) return;
+    const bar = el.parentElement;
+    el.textContent = NAME;
+    let guard = 0;
+    while (el.scrollWidth < bar.clientWidth * 1.05 && guard < 120) {
+      el.textContent += "A";
+      guard++;
+    }
+  }
+
+  function buildAll() {
+    document.querySelectorAll(".marquee").forEach(buildMarquee);
+    fillName();
+  }
+
+  buildAll();
+
+  // rebuild on resize (debounced) so everything stays seamless
+  let rt;
+  window.addEventListener("resize", () => {
+    clearTimeout(rt);
+    rt = setTimeout(buildAll, 200);
+  });
+
+  // rebuild once fonts finish loading (widths change -> keeps loop seamless)
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(buildAll);
+  }
+</script>
 </body>
 </html>
