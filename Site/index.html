@@ -358,6 +358,26 @@
   }
   .copy a:hover { opacity: .65; }
 
+  /* audio play button (frog cart -> Tokyo Drift) */
+  .player { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .play-btn {
+    width: 46px; height: 46px; flex: 0 0 auto;
+    border: none; border-radius: 50%;
+    background: var(--link, #FF5900); color: #fff; cursor: pointer;
+    display: grid; place-items: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,.18);
+    transition: transform .15s ease, filter .15s ease;
+  }
+  .play-btn:hover { transform: scale(1.09); filter: brightness(1.06); }
+  .play-btn:active { transform: scale(.96); }
+  .play-btn:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
+  .play-btn svg { width: 20px; height: 20px; fill: currentColor; display: block; }
+  .player-label {
+    font-family: 'Archivo', sans-serif; font-weight: 900;
+    text-transform: uppercase; letter-spacing: .03em;
+    font-size: 13px; color: var(--link, #FF5900);
+  }
+
   @media (max-width: 900px) {
     .panel-content { flex-direction: column; gap: 24px; padding: 28px 6vw 32px; }
     .images { max-width: 100%; width: 100%; flex-direction: column; }
@@ -402,6 +422,9 @@
     "theme-friends": "#FF04C0", "theme-hydra": "#7700FF", "theme-frog": "#FF5900",
     "theme-dare": "#FF0059", "theme-birdie": "#6A00FF"
   };
+
+  const PLAY_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>';
+  const PAUSE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"></path></svg>';
 
   const bars = [
     {
@@ -468,7 +491,7 @@
         "Did it work? Yes! We celebrated our 2 year anniversary a few months ago and I met people I still yap with on a daily basis. That’s amazing net revenue (friendship) retention if I do say so myself.", 
         "Featured by the <a href=\"https://www.nytimes.com/2023/03/11/style/optimism-friendship-dinner.html\" target=\"_blank\" rel=\"noopener noreferrer\">New York Times</a>."
       ],
-      images: ["Dinner1.jpg", "Dinner2.png", "Dinner4.png"],
+      images: ["Dinner1.jpg", "Dinner2.png", "Dinner 4.png"],
       mediaLayout: "split"
     },
     {
@@ -488,7 +511,8 @@
         "This cart has motion on many levels. His legs are powered by your gentle guidance while his back is as strong as a Mesopotamian mule. Vases, cases, bottles, and models -- your wish is his command with his 3 different shelf levels.",
         "Vroom vroom."
       ],
-      images: ["frog.png"]
+      images: ["frog.png"],
+      audio: "tokyodrift.mp3"
     },
     {
       type: "project", theme: "theme-birdie",
@@ -602,6 +626,7 @@
 
     const copy = document.createElement("div");
     copy.className = "copy";
+    if (bar.audio) copy.appendChild(makePlayer(bar.audio, bar.audioLabel || "Play the Soundtrack"));
     const h2 = document.createElement("h2");
     h2.textContent = bar.heading;
     copy.appendChild(h2);
@@ -665,6 +690,39 @@
       if (img.complete && img.naturalWidth) apply();
       else img.addEventListener("load", apply, { once: true });
     });
+  }
+
+  /* ---- audio play/pause button (e.g. Tokyo Drift under frog cart) ---- */
+  function makePlayer(src, label) {
+    const wrap = document.createElement("div");
+    wrap.className = "player";
+    const audio = document.createElement("audio");
+    audio.src = src;
+    audio.preload = "none";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "play-btn";
+    btn.innerHTML = PLAY_SVG;
+    btn.setAttribute("aria-label", "Play " + label);
+    const span = document.createElement("span");
+    span.className = "player-label";
+    span.textContent = label;
+    const sync = () => {
+      const playing = !audio.paused;
+      btn.innerHTML = playing ? PAUSE_SVG : PLAY_SVG;
+      btn.setAttribute("aria-label", (playing ? "Pause " : "Play ") + label);
+    };
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (audio.paused) audio.play().catch(() => {}); else audio.pause();
+    });
+    audio.addEventListener("play", sync);
+    audio.addEventListener("pause", sync);
+    audio.addEventListener("ended", sync);
+    wrap.appendChild(btn);
+    wrap.appendChild(span);
+    wrap.appendChild(audio);
+    return wrap;
   }
 
   /* ---- marquee builder: fill the width, then duplicate for a seamless loop ---- */
