@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ALICIA — Portfolio</title>
 
+<!-- Browser tab / bookmark icon -->
+<link rel="icon" type="image/png" href="mushimushiBusinessCard-26.png" />
+<link rel="apple-touch-icon" href="mushimushiBusinessCard-26.png" />
+
 <!-- Fonts. Swap these for your exact Figma fonts if you have the files. -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -31,7 +35,7 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html, body { background: #000; }
+  html, body { background: #000; overflow-x: hidden; }
   body {
     font-family: 'Archivo', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -127,8 +131,17 @@
     align-items: center;
     overflow: hidden;
     cursor: pointer;
+    position: relative;
+    transform-origin: center center;
+    transition: transform .18s cubic-bezier(.2,.7,.2,1), box-shadow .18s ease;
+    will-change: transform;
   }
-  .name-bar:hover .name-text { opacity: .9; }
+  .name-bar:hover,
+  .name-bar:focus-visible {
+    transform: scale(1.035);
+    box-shadow: 0 16px 46px rgba(0,0,0,.5);
+    z-index: 20;
+  }
   .name-bar:focus-visible { outline: 4px solid #fff; outline-offset: -8px; }
   .name-text {
     font-family: 'Archivo', sans-serif;
@@ -137,7 +150,7 @@
     text-transform: uppercase;
     white-space: nowrap;
     line-height: .82;
-    font-size: clamp(64px, 17.5vh, 240px);
+    font-size: clamp(40px, min(17.5vh, 15vw), 240px);
     padding-left: 2vw;
   }
 
@@ -154,7 +167,7 @@
   .panel-content {
     display: flex;
     gap: clamp(28px, 3vw, 48px);
-    padding: 48px 5vw 64px;
+    padding: 40px 5vw 40px;
     align-items: flex-start;
     flex-wrap: wrap;
   }
@@ -164,7 +177,7 @@
      copy fills the rest, so panels never look empty. Items wrap if too wide. */
   .images {
     flex: 0 1 auto;
-    max-width: 70%;
+    max-width: 72%;
     min-width: 0;
     display: flex;
     flex-wrap: wrap;
@@ -173,7 +186,7 @@
   }
   .images .photo,
   .images .video {
-    height: clamp(320px, 44vh, 480px);   /* solid minimum so images read big */
+    height: clamp(300px, 42vh, 460px);   /* desktop images read large */
     width: auto;
     max-width: 100%;                      /* never overflow its column */
     flex: 0 0 auto;
@@ -190,8 +203,8 @@
   .images.images--stack {
     flex-direction: column;
     flex-wrap: nowrap;
-    width: clamp(340px, 42vw, 560px);
-    max-width: 70%;
+    width: clamp(360px, 44vw, 600px);
+    max-width: 72%;
   }
   .images.images--stack .photo,
   .images.images--stack .video {
@@ -205,8 +218,8 @@
   /* mushi: two photos ALWAYS side by side, equal width */
   .images.images--duo {
     flex-wrap: nowrap;
-    width: min(70%, 760px);
-    max-width: 70%;
+    width: min(72%, 840px);
+    max-width: 72%;
   }
   .images.images--duo .photo,
   .images.images--duo .video {
@@ -216,6 +229,56 @@
     height: auto;
     max-width: none;
   }
+
+  /* dinner: all photos in ONE justified row (equal height, fills the column) */
+  .images.images--row {
+    flex-wrap: nowrap;
+    width: min(70%, 900px);
+    max-width: 70%;
+    align-items: flex-start;
+  }
+  .images.images--row .photo {
+    flex: 1 1 0;         /* JS sets flex-grow = aspect ratio so heights match */
+    min-width: 0;
+    width: 100%;
+    height: auto;
+    max-width: none;
+  }
+  .images.images--row .video { flex: 1.7778 1 0; min-width: 0; }
+
+  /* equal-width columns: every item the SAME width (heights vary by aspect) */
+  .images.images--cols {
+    flex-wrap: nowrap;
+    width: min(72%, 920px);
+    max-width: 72%;
+    align-items: flex-start;
+  }
+  .images.images--cols .photo,
+  .images.images--cols .video {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+    height: auto;
+    max-width: none;
+  }
+
+  /* dinner: two photos on top (equal width), third spans the full width below */
+  .images.images--split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: min(58%, 720px);
+    max-width: 72%;
+    align-content: start;
+  }
+  .images.images--split .photo,
+  .images.images--split .video {
+    flex: none;
+    width: 100%;
+    height: auto;
+    max-width: none;
+  }
+  .images.images--split > :nth-child(3) { grid-column: 1 / -1; }   /* full-width, underneath */
   .copy h2 {
     font-family: 'Archivo', sans-serif;
     font-weight: 900;
@@ -227,8 +290,8 @@
   .copy p {
     font-family: system-ui, 'Helvetica Neue', Arial, sans-serif;
     font-size: 13.5px;
-    line-height: 1.55;
-    margin-bottom: 14px;
+    line-height: 1.6;
+    margin-bottom: 1em;
     max-width: 42ch;
     color: #666;          /* all paragraphs are grey + italic now */
     font-style: italic;
@@ -237,18 +300,24 @@
   .placeholder { color: #666; font-style: italic; }
 
   @media (max-width: 900px) {
-    .panel-content { flex-direction: column; gap: 24px; padding: 32px 6vw 44px; }
+    .panel-content { flex-direction: column; gap: 24px; padding: 32px 6vw 40px; }
     .images { max-width: 100%; width: 100%; flex-direction: column; }
     .images .photo, .images .video { width: 100%; height: auto; max-width: 100%; }
     .images .video { aspect-ratio: 16 / 9; }
-    .images.images--duo, .images.images--stack { width: 100%; max-width: 100%; flex-direction: column; flex-wrap: nowrap; }
+    .images.images--duo, .images.images--stack, .images.images--row, .images.images--cols { width: 100%; max-width: 100%; flex-direction: column; flex-wrap: nowrap; }
     .images.images--duo .photo, .images.images--duo .video,
-    .images.images--stack .photo, .images.images--stack .video { flex: none; width: 100%; height: auto; }
+    .images.images--stack .photo, .images.images--stack .video,
+    .images.images--row .photo, .images.images--row .video,
+    .images.images--cols .photo, .images.images--cols .video { flex: none; width: 100%; height: auto; }
+    .images.images--split { grid-template-columns: 1fr; width: 100%; max-width: 100%; }
+    .images.images--split > :nth-child(3) { grid-column: auto; }
+    .images.images--split .photo, .images.images--split .video { width: 100%; height: auto; }
     .copy { width: 100%; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .marquee-track { animation-play-state: paused; }
+    .bar:hover, .bar:focus-visible, .name-bar:hover, .name-bar:focus-visible { transform: none; }
   }
 </style>
 </head>
@@ -259,7 +328,8 @@
   /* =========================================================
      EDIT YOUR CONTENT HERE
      - Reorder / rename bars, change colors, drop in your copy.
-     - Replace the gray .imgbox divs with <img> tags when ready.
+     - Add media with:  images: ["pic.jpg", "https://youtu.be/ID"]
+       (mediaLayout: "duo" = two side by side, "stack" = same-width column)
      - Marquee speed per bar lives on each .theme-* (--speed, px/sec).
      ========================================================= */
   const NAME = "ALICIA";
@@ -272,7 +342,7 @@
       paragraphs: [
         "The dining table is not neutral. Plates, serving systems, proximity, and timing quietly inform behavior. A few months after I started hosting dinner parties with strangers, I began designing ceramic products not to control interaction, but to create openings for it.", 
         "Adults are overtrained in seriousness while lightheartedness is disarming, and that’s wherAdults are overtrained in seriousness while lightheartedness is disarming. That’s where mushi mushi 1.0 comes in. mushi mushi is named after my childhood dog, Mushie, and aims to encompass his silly and free spirit that shines against the heaviness of contemporary life.", 
-        "Version 2.0 coming soon..."
+        "Version 2.0 coming soon... 👀"
       ],
       images: ["Plates.JPG", "Penguins.png"],
       mediaLayout: "duo"
@@ -305,7 +375,7 @@
       text: "DARE TO D.A.R.E.",
       heading: "DARE TO D.A.R.E.",
       paragraphs: [
-        "This is your brain when you roll with your vices."
+        "This is your brain when you roll with your vices. 🤯"
       ],
       images: ["Dare1.jpg", "Dare2.jpg"]
     },
@@ -317,7 +387,7 @@
         "Online: <a href=\"mailto:alicia888lee@gmail.com\">email</a> &middot; <a href=\"https://www.instagram.com/alicial33/\" target=\"_blank\" rel=\"noopener noreferrer\">Instagram</a> &middot; <a href=\"https://www.linkedin.com/in/alicial33/\" target=\"_blank\" rel=\"noopener noreferrer\">LinkedIn</a>.",
         "Offline: NYC, LA"
       ],
-      placeholder: true
+      images: ["face.gif"]
     },
     {
       type: "project", theme: "theme-friends",
@@ -328,7 +398,8 @@
         "Did it work? Yes! We celebrated our 2 year anniversary a few months ago and I met people I still yap with on a daily basis. That’s amazing net revenue (friendship) retention if I do say so myself.", 
         "Featured by the <a href=\"https://www.nytimes.com/2023/03/11/style/optimism-friendship-dinner.html\" target=\"_blank\" rel=\"noopener noreferrer\">New York Times</a>."
       ],
-      images: ["Dinner1.jpg", "Dinner2.png", "Dinner 4.png",]
+      images: ["Dinner1.jpg", "Dinner2.png", "Dinner 4.png"],
+      mediaLayout: "split"
     },
     {
       type: "project", theme: "theme-hydra",
@@ -391,7 +462,7 @@
 
       if (bar.images && bar.images.length) {
         const images = document.createElement("div");
-        images.className = "images";
+        images.className = "images" + (bar.mediaLayout ? " images--" + bar.mediaLayout : "");
         images.innerHTML = bar.images.map(item => mediaHTML(item, bar.heading || "ABOUT")).join("");
         content.appendChild(images);
       }
@@ -511,6 +582,19 @@
     return `<img class="photo" src="${item}" alt="${heading}" loading="lazy">`;
   }
 
+  /* ---- for "row" layouts: set each photo's flex-grow to its aspect ratio so
+     all photos in the row end at the same height and fill the width ---- */
+  function fitRow(scope) {
+    (scope || document).querySelectorAll(".images--row .photo").forEach((img) => {
+      const apply = () => {
+        const ar = img.naturalWidth / img.naturalHeight;
+        if (ar && isFinite(ar)) img.style.flexGrow = ar.toFixed(4);
+      };
+      if (img.complete && img.naturalWidth) apply();
+      else img.addEventListener("load", apply, { once: true });
+    });
+  }
+
   /* ---- marquee builder: fill the width, then duplicate for a seamless loop ---- */
   function buildMarquee(marquee) {
     marquee.innerHTML = "";
@@ -561,6 +645,7 @@
   function buildAll() {
     document.querySelectorAll(".marquee").forEach(buildMarquee);
     fillName();
+    fitRow();
   }
 
   buildAll();
