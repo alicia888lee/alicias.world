@@ -311,6 +311,23 @@
     max-width: none;
   }
   .images.images--split > :nth-child(3) { grid-column: 1 / -1; }   /* full-width, underneath */
+
+  /* circular media (e.g. the ALICIA face gif) */
+  .images.images--circle {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 100%;
+  }
+  .images.images--circle .photo,
+  .images.images--circle .video {
+    width: clamp(200px, 34vh, 360px);
+    height: clamp(200px, 34vh, 360px);
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    object-fit: cover;
+    max-width: 100%;
+    flex: 0 0 auto;
+  }
   .copy h2 {
     font-family: 'Archivo', sans-serif;
     font-weight: 900;
@@ -342,7 +359,7 @@
   .copy a:hover { opacity: .65; }
 
   @media (max-width: 900px) {
-    .panel-content { flex-direction: column; gap: 24px; padding: 32px 6vw 40px; }
+    .panel-content { flex-direction: column; gap: 24px; padding: 28px 6vw 32px; }
     .images { max-width: 100%; width: 100%; flex-direction: column; }
     .images .photo, .images .video { width: 100%; height: auto; max-width: 100%; }
     .images .video { aspect-ratio: 16 / 9; }
@@ -354,7 +371,7 @@
     .images.images--split { grid-template-columns: 1fr; width: 100%; max-width: 100%; }
     .images.images--split > :nth-child(3) { grid-column: auto; }
     .images.images--split .photo, .images.images--split .video { width: 100%; height: auto; }
-    .copy { width: 100%; }
+    .copy { width: 100%; flex: 0 0 auto; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -439,7 +456,8 @@
         "Online: <a href=\"mailto:alicia888lee@gmail.com\">email</a> &middot; <a href=\"https://www.instagram.com/alicial33/\" target=\"_blank\" rel=\"noopener noreferrer\">Instagram</a> &middot; <a href=\"https://www.linkedin.com/in/alicial33/\" target=\"_blank\" rel=\"noopener noreferrer\">LinkedIn</a>.",
         "Offline: NYC, LA"
       ],
-      images: ["face.gif"]
+      images: ["face.gif"],
+      mediaLayout: "circle"
     },
     {
       type: "project", theme: "theme-friends",
