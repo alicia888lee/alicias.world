@@ -4,10 +4,24 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ALICIA — Portfolio</title>
+<meta name="description" content="Alicia — designer working across ceramics, objects, and installations. Bringing the unserious to serious places." />
+<meta name="theme-color" content="#000000" />
 
 <!-- Browser tab / bookmark icon -->
 <link rel="icon" type="image/png" href="mushimushiBusinessCard-26.png" />
 <link rel="apple-touch-icon" href="mushimushiBusinessCard-26.png" />
+
+<!-- Social share preview. TIP: for reliable previews, change the two image URLs
+     below to the full address once deployed, e.g.
+     https://your-site.vercel.app/mushimushiBusinessCard-26.png -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="ALICIA — Portfolio" />
+<meta property="og:description" content="Designer working across ceramics, objects, and installations. Bringing the unserious to serious places." />
+<meta property="og:image" content="mushimushiBusinessCard-26.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="ALICIA — Portfolio" />
+<meta name="twitter:description" content="Designer working across ceramics, objects, and installations." />
+<meta name="twitter:image" content="mushimushiBusinessCard-26.png" />
 
 <!-- Fonts. Swap these for your exact Figma fonts if you have the files. -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -35,12 +49,16 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  html { scroll-behavior: smooth; }
   html, body { background: #000; overflow-x: hidden; }
   body {
     font-family: 'Archivo', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
+
+  /* neon text-selection highlight */
+  ::selection { background: #8CFF00; color: #000; }
 
   #app { min-height: 100vh; display: flex; flex-direction: column; }
 
@@ -73,6 +91,17 @@
     z-index: 20;
   }
   .bar:focus-visible { outline: 4px solid #fff; outline-offset: -8px; }
+
+  /* open cue: the currently-expanded bar gets an inset ring in its accent colour */
+  .bar[aria-expanded="true"]::before,
+  .name-bar[aria-expanded="true"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 5px solid currentColor;
+    pointer-events: none;
+    z-index: 6;
+  }
 
   /* ---------- marquee ---------- */
   .marquee { width: 100%; height: 100%; overflow: hidden; display: flex; align-items: center; }
@@ -170,7 +199,10 @@
     padding: 40px 5vw 40px;
     align-items: flex-start;
     flex-wrap: wrap;
+    opacity: 0;                                   /* fades in when the panel opens */
+    transition: opacity .45s ease .12s;
   }
+  .panel.open .panel-content { opacity: 1; }
 
   /* media: every photo/video in a section shares one (large) height and keeps
      its natural width — no cropping. The media block hugs its content and the
@@ -299,6 +331,16 @@
   .copy p:last-child { margin-bottom: 0; }
   .placeholder { color: #666; font-style: italic; }
 
+  /* in-copy links tint to each project's accent colour (set per panel in JS) */
+  .copy a {
+    color: var(--link, #0436FF);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1.5px;
+    transition: opacity .15s ease;
+  }
+  .copy a:hover { opacity: .65; }
+
   @media (max-width: 900px) {
     .panel-content { flex-direction: column; gap: 24px; padding: 32px 6vw 40px; }
     .images { max-width: 100%; width: 100%; flex-direction: column; }
@@ -318,6 +360,8 @@
   @media (prefers-reduced-motion: reduce) {
     .marquee-track { animation-play-state: paused; }
     .bar:hover, .bar:focus-visible, .name-bar:hover, .name-bar:focus-visible { transform: none; }
+    html { scroll-behavior: auto; }
+    .panel-content { opacity: 1; transition: none; }
   }
 </style>
 </head>
@@ -327,12 +371,20 @@
 <script>
   /* =========================================================
      EDIT YOUR CONTENT HERE
-     - Reorder / rename bars, change colors, drop in your copy.
+     - Reorder / rename bars, change colors, drop in your copy (emojis welcome!).
      - Add media with:  images: ["pic.jpg", "https://youtu.be/ID"]
-       (mediaLayout: "duo" = two side by side, "stack" = same-width column)
+       mediaLayout: "duo"=two side by side · "stack"=same-width column ·
+                    "cols"=equal-width columns · "split"=two on top + one full-width below
      - Marquee speed per bar lives on each .theme-* (--speed, px/sec).
      ========================================================= */
   const NAME = "ALICIA";
+
+  /* readable-on-white accent used for in-copy links, per project */
+  const LINK = {
+    "theme-mushi": "#0436FF", "theme-chair": "#0436FF", "theme-pigeon": "#A600FF",
+    "theme-friends": "#FF04C0", "theme-hydra": "#7700FF", "theme-frog": "#FF5900",
+    "theme-dare": "#FF0059", "theme-birdie": "#6A00FF"
+  };
 
   const bars = [
     {
@@ -340,8 +392,8 @@
       text: "mushi mushi 1.0",
       heading: "MUSHI MUSHI 1.0",
       paragraphs: [
-        "The dining table is not neutral. Plates, serving systems, proximity, and timing quietly inform behavior. A few months after I started hosting dinner parties with strangers, I began designing ceramic products not to control interaction, but to create openings for it.", 
-        "Adults are overtrained in seriousness while lightheartedness is disarming, and that’s wherAdults are overtrained in seriousness while lightheartedness is disarming. That’s where mushi mushi 1.0 comes in. mushi mushi is named after my childhood dog, Mushie, and aims to encompass his silly and free spirit that shines against the heaviness of contemporary life.", 
+        "The dining table is not neutral. Plates, serving systems, proximity, and timing quietly inform behavior. A few months after I started hosting dinner parties with strangers, I began designing ceramic products not to control interaction, but to create openings for it.",
+        "Adults are overtrained in seriousness while lightheartedness is disarming. That’s where mushi mushi 1.0 comes in. mushi mushi is named after my childhood dog, Mushie, and aims to encompass his silly and free spirit that shines against the heaviness of contemporary life.",
         "Version 2.0 coming soon... 👀"
       ],
       images: ["Plates.JPG", "Penguins.png"],
@@ -398,7 +450,7 @@
         "Did it work? Yes! We celebrated our 2 year anniversary a few months ago and I met people I still yap with on a daily basis. That’s amazing net revenue (friendship) retention if I do say so myself.", 
         "Featured by the <a href=\"https://www.nytimes.com/2023/03/11/style/optimism-friendship-dinner.html\" target=\"_blank\" rel=\"noopener noreferrer\">New York Times</a>."
       ],
-      images: ["Dinner1.jpg", "Dinner2.png", "Dinner 4.png"],
+      images: ["Dinner1.jpg", "Dinner2.png", "Dinner4.png"],
       mediaLayout: "split"
     },
     {
@@ -455,6 +507,7 @@
       // panel (same layout as the project bars)
       const panel = document.createElement("div");
       panel.className = "panel";
+      panel.style.setProperty("--link", "#6A00FF");
       const inner = document.createElement("div");
       inner.className = "panel-inner";
       const content = document.createElement("div");
@@ -516,6 +569,7 @@
     // panel
     const panel = document.createElement("div");
     panel.className = "panel";
+    panel.style.setProperty("--link", LINK[bar.theme] || "#0436FF");
     const inner = document.createElement("div");
     inner.className = "panel-inner";
     const content = document.createElement("div");
