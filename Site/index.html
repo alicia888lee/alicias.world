@@ -204,130 +204,112 @@
   }
   .panel.open .panel-content { opacity: 1; }
 
-  /* media: every photo/video in a section shares one (large) height and keeps
-     its natural width — no cropping. The media block hugs its content and the
-     copy fills the rest, so panels never look empty. Items wrap if too wide. */
-  .images {
-    flex: 0 1 auto;
-    max-width: 72%;
+  /* ---------- unified media carousel ----------
+     Every project's media lives in one carousel: one item on screen at a
+     time, with arrows + dots to move between them. A single item hides the
+     controls and just shows the photo. The copy always sits in the same
+     place (the column to the right), whatever the image count or shape. */
+  .carousel {
+    flex: 0 0 clamp(340px, 46vw, 600px);
+    max-width: 100%;
     min-width: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-content: flex-start;
   }
-  .images .photo,
-  .images .video {
-    height: clamp(300px, 42vh, 460px);   /* desktop images read large */
-    width: auto;
-    max-width: 100%;                      /* never overflow its column */
-    flex: 0 0 auto;
-    display: block;
+  .carousel-viewport {
+    position: relative;
+    overflow: hidden;
     border-radius: 2px;
-    background: #f0f0f0;                  /* soft backdrop while loading */
+    background: #fff;                     /* clean white backdrop / letterbox */
   }
-  .images .video { aspect-ratio: 16 / 9; overflow: hidden; }
-  .images .video iframe { width: 100%; height: 100%; display: block; border: 0; }
+  .carousel-track {
+    display: flex;
+    transition: transform .4s cubic-bezier(.4,0,.2,1);
+    will-change: transform;
+  }
+  .slide {
+    flex: 0 0 100%;
+    min-width: 0;
+    height: clamp(300px, 46vh, 480px);   /* one stable frame for every image */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+  }
+  .slide .photo {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;                 /* never crop — fit inside the frame */
+    display: block;
+  }
+  .slide .video {
+    width: 100%;
+    max-height: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+  .slide .video iframe { width: 100%; height: 100%; display: block; border: 0; }
+
+  /* prev / next arrows */
+  .car-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px; height: 44px;
+    border: none; border-radius: 50%;
+    background: rgba(0,0,0,.5); color: #fff;
+    display: grid; place-items: center;
+    cursor: pointer; z-index: 4;
+    transition: background .15s ease, transform .15s ease;
+  }
+  .car-btn:hover { background: rgba(0,0,0,.82); }
+  .car-btn:active { transform: translateY(-50%) scale(.92); }
+  .car-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  .car-btn svg { width: 22px; height: 22px; fill: currentColor; display: block; }
+  .car-prev { left: 10px; }
+  .car-next { right: 10px; }
+
+  /* dots */
+  .carousel-dots {
+    display: flex; gap: 8px; justify-content: center;
+    margin-top: 12px; flex-wrap: wrap;
+  }
+  .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    border: none; padding: 0; cursor: pointer;
+    background: #cfcfcf;
+    transition: background .15s ease, transform .15s ease;
+  }
+  .dot:hover { background: #a9a9a9; }
+  .dot.active { background: var(--link, #0436FF); transform: scale(1.25); }
+  .dot:focus-visible { outline: 2px solid var(--link, #0436FF); outline-offset: 2px; }
+
+  /* one item only: hide the controls, just show the photo */
+  .carousel.is-single .car-btn,
+  .carousel.is-single .carousel-dots { display: none; }
+
+  /* round variant: circular frame (used by the ALICIA gif) */
+  .carousel.is-round { flex: 0 0 auto; }
+  .carousel.is-round .carousel-viewport {
+    width: clamp(220px, 34vh, 380px);
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    margin: 0 auto;
+  }
+  .carousel.is-round .slide {
+    height: 100%;
+  }
+  .carousel.is-round .slide .photo {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    object-fit: cover;             /* fill the circle, no letterbox */
+  }
 
   .copy { flex: 1 1 300px; min-width: 260px; }
 
-  /* chair: photo + video stacked at IDENTICAL widths */
-  .images.images--stack {
-    flex-direction: column;
-    flex-wrap: nowrap;
-    width: clamp(360px, 44vw, 600px);
-    max-width: 72%;
-  }
-  .images.images--stack .photo,
-  .images.images--stack .video {
-    width: 100%;
-    height: auto;
-    max-width: 100%;
-    flex: 0 0 auto;
-  }
-  .images.images--stack .video { aspect-ratio: 16 / 9; }
-
-  /* mushi: two photos ALWAYS side by side, equal width */
-  .images.images--duo {
-    flex-wrap: nowrap;
-    width: min(72%, 840px);
-    max-width: 72%;
-  }
-  .images.images--duo .photo,
-  .images.images--duo .video {
-    flex: 1 1 0;
-    min-width: 0;
-    width: auto;
-    height: auto;
-    max-width: none;
-  }
-
-  /* dinner: all photos in ONE justified row (equal height, fills the column) */
-  .images.images--row {
-    flex-wrap: nowrap;
-    width: min(70%, 900px);
-    max-width: 70%;
-    align-items: flex-start;
-  }
-  .images.images--row .photo {
-    flex: 1 1 0;         /* JS sets flex-grow = aspect ratio so heights match */
-    min-width: 0;
-    width: 100%;
-    height: auto;
-    max-width: none;
-  }
-  .images.images--row .video { flex: 1.7778 1 0; min-width: 0; }
-
-  /* equal-width columns: every item the SAME width (heights vary by aspect) */
-  .images.images--cols {
-    flex-wrap: nowrap;
-    width: min(72%, 920px);
-    max-width: 72%;
-    align-items: flex-start;
-  }
-  .images.images--cols .photo,
-  .images.images--cols .video {
-    flex: 1 1 0;
-    min-width: 0;
-    width: 100%;
-    height: auto;
-    max-width: none;
-  }
-
-  /* dinner: two photos on top (equal width), third spans the full width below */
-  .images.images--split {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    width: min(58%, 720px);
-    max-width: 72%;
-    align-content: start;
-  }
-  .images.images--split .photo,
-  .images.images--split .video {
-    flex: none;
-    width: 100%;
-    height: auto;
-    max-width: none;
-  }
-  .images.images--split > :nth-child(3) { grid-column: 1 / -1; }   /* full-width, underneath */
-
-  /* circular media (e.g. the ALICIA face gif) */
-  .images.images--circle {
-    flex: 0 0 auto;
-    width: auto;
-    max-width: 100%;
-  }
-  .images.images--circle .photo,
-  .images.images--circle .video {
-    width: clamp(200px, 34vh, 360px);
-    height: clamp(200px, 34vh, 360px);
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
-    object-fit: cover;
-    max-width: 100%;
-    flex: 0 0 auto;
-  }
   .copy h2 {
     font-family: 'Archivo', sans-serif;
     font-weight: 900;
@@ -380,22 +362,14 @@
 
   @media (max-width: 900px) {
     .panel-content { flex-direction: column; gap: 24px; padding: 28px 6vw 32px; }
-    .images { max-width: 100%; width: 100%; flex-direction: column; }
-    .images .photo, .images .video { width: 100%; height: auto; max-width: 100%; }
-    .images .video { aspect-ratio: 16 / 9; }
-    .images.images--duo, .images.images--stack, .images.images--row, .images.images--cols { width: 100%; max-width: 100%; flex-direction: column; flex-wrap: nowrap; }
-    .images.images--duo .photo, .images.images--duo .video,
-    .images.images--stack .photo, .images.images--stack .video,
-    .images.images--row .photo, .images.images--row .video,
-    .images.images--cols .photo, .images.images--cols .video { flex: none; width: 100%; height: auto; }
-    .images.images--split { grid-template-columns: 1fr; width: 100%; max-width: 100%; }
-    .images.images--split > :nth-child(3) { grid-column: auto; }
-    .images.images--split .photo, .images.images--split .video { width: 100%; height: auto; }
+    .carousel { flex: 0 0 auto; width: 100%; max-width: 100%; }
+    .slide { height: clamp(240px, 52vw, 380px); }
     .copy { width: 100%; flex: 0 0 auto; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .marquee-track { animation-play-state: paused; }
+    .carousel-track { transition: none; }
     .bar:hover, .bar:focus-visible, .name-bar:hover, .name-bar:focus-visible { transform: none; }
     html { scroll-behavior: auto; }
     .panel-content { opacity: 1; transition: none; }
@@ -410,8 +384,8 @@
      EDIT YOUR CONTENT HERE
      - Reorder / rename bars, change colors, drop in your copy (emojis welcome!).
      - Add media with:  images: ["pic.jpg", "https://youtu.be/ID"]
-       mediaLayout: "duo"=two side by side · "stack"=same-width column ·
-                    "cols"=equal-width columns · "split"=two on top + one full-width below
+       Every item shows in the carousel, one at a time. Two or more items get
+       arrows + dots automatically; a single item just shows the photo.
      - Marquee speed per bar lives on each .theme-* (--speed, px/sec).
      ========================================================= */
   const NAME = "ALICIA";
@@ -425,6 +399,8 @@
 
   const PLAY_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>';
   const PAUSE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"></path></svg>';
+  const CHEV_L = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"></path></svg>';
+  const CHEV_R = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 7.4 10 6l6 6-6 6-1.4-1.4L13.2 12z"></path></svg>';
 
   const bars = [
     {
@@ -436,8 +412,7 @@
         "Adults are overtrained in seriousness while lightheartedness is disarming. That’s where mushi mushi 1.0 comes in. mushi mushi is named after my childhood dog, Mushie, and aims to encompass his silly and free spirit that shines against the heaviness of contemporary life.",
         "Version 2.0 coming soon... 👀"
       ],
-      images: ["Plates.JPG", "Penguins.png"],
-      mediaLayout: "duo"
+      images: ["Plates.JPG", "Penguins.png"]
     },
     {
       type: "project", theme: "theme-chair",
@@ -449,8 +424,7 @@
         "Shown in the <a href=\"https://www.providencejournal.com/picture-gallery/news/local/2026/05/22/highlights-from-2026-risd-grad-show-open-at-the-convention-center/90215438007/\" target=\"_blank\" rel=\"noopener noreferrer\">Providence Journal</a>.",
         "Read more about it <a href=\"https://digitalcommons.risd.edu/cgi/viewcontent.cgi?article=2596&context=masterstheses\" target=\"_blank\" rel=\"noopener noreferrer\">here</a>."
       ],
-      images: ["Chair2final.png", "https://www.youtube.com/watch?v=KHAB8seV99w"],
-      mediaLayout: "stack"
+      images: ["Chair2final.png", "https://www.youtube.com/watch?v=KHAB8seV99w"]
     },
     {
       type: "project", theme: "theme-pigeon",
@@ -479,8 +453,7 @@
         "Online: <a href=\"mailto:alicia888lee@gmail.com\">email</a> &middot; <a href=\"https://www.instagram.com/alicial33/\" target=\"_blank\" rel=\"noopener noreferrer\">Instagram</a> &middot; <a href=\"https://www.linkedin.com/in/alicial33/\" target=\"_blank\" rel=\"noopener noreferrer\">LinkedIn</a>.",
         "Offline: NYC, LA"
       ],
-      images: ["face.gif"],
-      mediaLayout: "circle"
+      images: ["face.gif"]
     },
     {
       type: "project", theme: "theme-friends",
@@ -491,8 +464,7 @@
         "Did it work? Yes! We celebrated our 2 year anniversary a few months ago and I met people I still yap with on a daily basis. That’s amazing net revenue (friendship) retention if I do say so myself.", 
         "Featured by the <a href=\"https://www.nytimes.com/2023/03/11/style/optimism-friendship-dinner.html\" target=\"_blank\" rel=\"noopener noreferrer\">New York Times</a>."
       ],
-      images: ["Dinner1.jpg", "Dinner2.png", "Dinner 4.png"],
-      mediaLayout: "split"
+      images: ["Dinner1.jpg", "Dinner2.png", "Dinner 4.png"]
     },
     {
       type: "project", theme: "theme-hydra",
@@ -556,10 +528,7 @@
       content.className = "panel-content";
 
       if (bar.images && bar.images.length) {
-        const images = document.createElement("div");
-        images.className = "images" + (bar.mediaLayout ? " images--" + bar.mediaLayout : "");
-        images.innerHTML = bar.images.map(item => mediaHTML(item, bar.heading || "ABOUT")).join("");
-        content.appendChild(images);
+        content.appendChild(makeCarousel(bar.images, bar.heading || "ABOUT", { round: true }));
       }
 
       const copy = document.createElement("div");
@@ -618,10 +587,7 @@
     content.className = "panel-content";
 
     if (bar.images && bar.images.length) {
-      const images = document.createElement("div");
-      images.className = "images" + (bar.mediaLayout ? " images--" + bar.mediaLayout : "");
-      images.innerHTML = bar.images.map(item => mediaHTML(item, bar.heading)).join("");
-      content.appendChild(images);
+      content.appendChild(makeCarousel(bar.images, bar.heading));
     }
 
     const copy = document.createElement("div");
@@ -679,16 +645,84 @@
     return `<img class="photo" src="${item}" alt="${heading}" loading="lazy">`;
   }
 
-  /* ---- for "row" layouts: set each photo's flex-grow to its aspect ratio so
-     all photos in the row end at the same height and fill the width ---- */
-  function fitRow(scope) {
-    (scope || document).querySelectorAll(".images--row .photo").forEach((img) => {
-      const apply = () => {
-        const ar = img.naturalWidth / img.naturalHeight;
-        if (ar && isFinite(ar)) img.style.flexGrow = ar.toFixed(4);
+  /* ---- build a media carousel: one item on screen, arrows + dots to move
+     between them. A single item hides the controls and just shows the photo. ---- */
+  function makeCarousel(items, heading, opts) {
+    const car = document.createElement("div");
+    car.className = "carousel";
+    const n = items.length;
+    if (n <= 1) car.classList.add("is-single");
+    if (opts && opts.round) car.classList.add("is-round");
+
+    const viewport = document.createElement("div");
+    viewport.className = "carousel-viewport";
+
+    const track = document.createElement("div");
+    track.className = "carousel-track";
+    track.innerHTML = items.map((it) => `<div class="slide">${mediaHTML(it, heading)}</div>`).join("");
+    viewport.appendChild(track);
+
+    const prev = document.createElement("button");
+    prev.type = "button";
+    prev.className = "car-btn car-prev";
+    prev.setAttribute("aria-label", "Previous image");
+    prev.innerHTML = CHEV_L;
+
+    const next = document.createElement("button");
+    next.type = "button";
+    next.className = "car-btn car-next";
+    next.setAttribute("aria-label", "Next image");
+    next.innerHTML = CHEV_R;
+
+    viewport.appendChild(prev);
+    viewport.appendChild(next);
+    car.appendChild(viewport);
+
+    const dots = document.createElement("div");
+    dots.className = "carousel-dots";
+    items.forEach((_, i) => {
+      const d = document.createElement("button");
+      d.type = "button";
+      d.className = "dot" + (i === 0 ? " active" : "");
+      d.setAttribute("aria-label", "Go to image " + (i + 1));
+      dots.appendChild(d);
+    });
+    car.appendChild(dots);
+
+    if (n > 1) {
+      car.dataset.idx = "0";
+      const dotEls = Array.from(dots.children);
+      const slides = Array.from(track.children);
+      const go = (i) => {
+        const idx = (i + n) % n;
+        car.dataset.idx = String(idx);
+        const w = viewport.clientWidth;               // integer px -> lands on the pixel grid
+        if (w) {
+          slides.forEach((s) => { s.style.flex = "0 0 " + w + "px"; });
+          track.style.transform = "translate3d(" + (-idx * w) + "px,0,0)";
+        }
+        dotEls.forEach((d, j) => d.classList.toggle("active", j === idx));
       };
-      if (img.complete && img.naturalWidth) apply();
-      else img.addEventListener("load", apply, { once: true });
+      prev.addEventListener("click", (e) => { e.stopPropagation(); go(parseInt(car.dataset.idx, 10) - 1); });
+      next.addEventListener("click", (e) => { e.stopPropagation(); go(parseInt(car.dataset.idx, 10) + 1); });
+      dotEls.forEach((d, j) => d.addEventListener("click", (e) => { e.stopPropagation(); go(j); }));
+    }
+
+    return car;
+  }
+
+  /* ---- re-snap every multi-item carousel to whole pixels (on load / resize)
+     so slide edges land exactly on the pixel grid — no faint neighbour seam ---- */
+  function fitCarousels() {
+    document.querySelectorAll(".carousel:not(.is-single)").forEach((car) => {
+      const vp = car.querySelector(".carousel-viewport");
+      const track = car.querySelector(".carousel-track");
+      if (!vp || !track) return;
+      const w = vp.clientWidth;
+      if (!w) return;
+      Array.from(track.children).forEach((s) => { s.style.flex = "0 0 " + w + "px"; });
+      const idx = parseInt(car.dataset.idx || "0", 10);
+      track.style.transform = "translate3d(" + (-idx * w) + "px,0,0)";
     });
   }
 
@@ -775,7 +809,7 @@
   function buildAll() {
     document.querySelectorAll(".marquee").forEach(buildMarquee);
     fillName();
-    fitRow();
+    fitCarousels();
   }
 
   buildAll();
