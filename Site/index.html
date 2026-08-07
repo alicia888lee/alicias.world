@@ -250,24 +250,23 @@
   }
   .slide .video iframe { width: 100%; height: 100%; display: block; border: 0; }
 
-  /* prev / next arrows */
+  /* prev / next arrows — red flower buttons */
   .car-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 44px; height: 44px;
-    border: none; border-radius: 50%;
-    background: rgba(0,0,0,.5); color: #fff;
-    display: grid; place-items: center;
+    width: 54px; height: 54px;
+    border: none; background: none; padding: 0;
     cursor: pointer; z-index: 4;
-    transition: background .15s ease, transform .15s ease;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,.22));
+    transition: transform .18s cubic-bezier(.2,.7,.2,1), filter .15s ease;
   }
-  .car-btn:hover { background: rgba(0,0,0,.82); }
-  .car-btn:active { transform: translateY(-50%) scale(.92); }
-  .car-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
-  .car-btn svg { width: 22px; height: 22px; fill: currentColor; display: block; }
-  .car-prev { left: 10px; }
-  .car-next { right: 10px; }
+  .car-btn:hover { transform: translateY(-50%) scale(1.12) rotate(10deg); filter: drop-shadow(0 2px 6px rgba(0,0,0,.28)); }
+  .car-btn:active { transform: translateY(-50%) scale(.95); }
+  .car-btn:focus-visible { outline: 3px solid #FF1E3C; outline-offset: 3px; }
+  .car-btn svg { width: 100%; height: 100%; display: block; pointer-events: none; }
+  .car-prev { left: 8px; }
+  .car-next { right: 8px; }
 
   /* dots */
   .carousel-dots {
@@ -343,17 +342,15 @@
   /* audio play button (frog cart -> Tokyo Drift) */
   .player { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 20px; }
   .play-btn {
-    width: 46px; height: 46px; flex: 0 0 auto;
-    border: none; border-radius: 50%;
-    background: var(--link, #FF5900); color: #fff; cursor: pointer;
-    display: grid; place-items: center;
-    box-shadow: 0 4px 14px rgba(0,0,0,.18);
-    transition: transform .15s ease, filter .15s ease;
+    width: 52px; height: 52px; flex: 0 0 auto;
+    border: none; background: none; padding: 0; cursor: pointer;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,.22));
+    transition: transform .18s cubic-bezier(.2,.7,.2,1), filter .15s ease;
   }
-  .play-btn:hover { transform: scale(1.09); filter: brightness(1.06); }
-  .play-btn:active { transform: scale(.96); }
-  .play-btn:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
-  .play-btn svg { width: 20px; height: 20px; fill: currentColor; display: block; }
+  .play-btn:hover { transform: scale(1.1) rotate(10deg); filter: drop-shadow(0 2px 6px rgba(0,0,0,.28)); }
+  .play-btn:active { transform: scale(.95); }
+  .play-btn:focus-visible { outline: 3px solid #FF1E3C; outline-offset: 3px; }
+  .play-btn svg { width: 100%; height: 100%; display: block; pointer-events: none; }
   .player-label {
     font-family: 'Archivo', sans-serif; font-weight: 900;
     text-transform: uppercase; letter-spacing: .03em;
@@ -397,10 +394,10 @@
     "theme-dare": "#FF0059", "theme-birdie": "#6A00FF"
   };
 
-  const PLAY_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>';
-  const PAUSE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"></path></svg>';
-  const CHEV_L = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"></path></svg>';
-  const CHEV_R = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 7.4 10 6l6 6-6 6-1.4-1.4L13.2 12z"></path></svg>';
+  const PLAY_SVG = '<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="#FF1E3C"><circle cx="50" cy="26" r="21"/><circle cx="73" cy="43" r="21"/><circle cx="64" cy="70" r="21"/><circle cx="36" cy="70" r="21"/><circle cx="27" cy="43" r="21"/><circle cx="50" cy="50" r="25"/></g><path d="M45 38 L45 62 L67 50 Z" fill="#fff"/></svg>';
+  const PAUSE_SVG = '<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="#FF1E3C"><circle cx="50" cy="26" r="21"/><circle cx="73" cy="43" r="21"/><circle cx="64" cy="70" r="21"/><circle cx="36" cy="70" r="21"/><circle cx="27" cy="43" r="21"/><circle cx="50" cy="50" r="25"/></g><rect x="40" y="38" width="7.5" height="24" rx="2" fill="#fff"/><rect x="52.5" y="38" width="7.5" height="24" rx="2" fill="#fff"/></svg>';
+  const CHEV_L = '<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="#FF1E3C"><circle cx="50" cy="26" r="21"/><circle cx="73" cy="43" r="21"/><circle cx="64" cy="70" r="21"/><circle cx="36" cy="70" r="21"/><circle cx="27" cy="43" r="21"/><circle cx="50" cy="50" r="25"/></g><path d="M56 40 42 50 56 60" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const CHEV_R = '<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="#FF1E3C"><circle cx="50" cy="26" r="21"/><circle cx="73" cy="43" r="21"/><circle cx="64" cy="70" r="21"/><circle cx="36" cy="70" r="21"/><circle cx="27" cy="43" r="21"/><circle cx="50" cy="50" r="25"/></g><path d="M44 40 58 50 44 60" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   const bars = [
     {
@@ -748,7 +745,7 @@
     };
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
-      if (audio.paused) audio.play().catch(() => {}); else audio.pause();
+      if (audio.paused) audio.play().catch((err) => { console.warn("Audio couldn't play:", src, err); }); else audio.pause();
     });
     audio.addEventListener("play", sync);
     audio.addEventListener("pause", sync);
